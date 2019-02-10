@@ -1,0 +1,3 @@
+enum ELetterPresentationTypes{
+  Chart,Table
+}

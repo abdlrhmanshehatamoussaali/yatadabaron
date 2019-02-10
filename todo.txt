@@ -1,0 +1,62 @@
+17/12/2018
+============
+Backend
+    [#] Managing Enums
+    [#] Converting Basmala into an Enum
+
+Frontend
+    SearchPage
+    [#] Padding in searchwidget
+    [#] Converting radiogroups to dropdownbutton
+    [#] Increasing Title fontsize and decireasign Subttile fontsize
+    [#] Replacing basmala with Dropdownbutton
+
+    HomePage
+    [#] ...
+
+    LettersPage
+    [#] Placing navigation icon
+
+
+
+18/12/2018
+============
+    [#] Increase the size of Chart FloatingActionButton.
+    [#] Put the Interaction Message above the results.
+    [#] Return nothing if the keyword is null.
+    [#] Improve the Interaction Message to include much information like the search method.
+    [#] Avoid having multiple databases in the application folder => if(no_of_uses==0) then(delete all the databases in the application folder)
+    [#] The ability to save some user settings like (no_of_uses,sent_questionnaire,sent_feedback,...) =>  Create a new datasource (db|JSON File)
+    [#] Search button (color + text instead of icon)
+    [#] The user needs to send his opinions and messages to our API => New ContactUs page
+        [#] Creating the page
+        [#] Creating the icon
+        [#] Choosign the place of the icon
+        [#] API Preparation
+
+    
+    
+
+
+
+FUTURE
+======
+    [#] Fix the userid problem (all having same userid): must be something related to the mobile itself.
+    [#] making email optional.
+    [#] information message that email is optional and used only for communication.
+    [ ] Export tables and results.
+    [ ] Add new page to show quran chapters.
+    [ ] "Initialize" method is called with every navigation.
+
+    [ ] The user must fill a Questionnaire to send it => New Questionnaire page.
+    [ ] Improve the way string values are called from the code.
+    [ ] Increasing the accuracy of the chart.
+    [ ] Review Serach Accuracy (Contains).
+    [ ] Creating new popup for helping in search settings.
+    [ ] Add Questionnaire page.
+
+
+    
+
+
+

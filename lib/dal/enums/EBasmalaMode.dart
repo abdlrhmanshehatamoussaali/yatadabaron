@@ -1,0 +1,4 @@
+enum EBasmalaMode{
+  Consider,
+  Ignore
+}
