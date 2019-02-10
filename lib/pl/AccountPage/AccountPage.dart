@@ -42,10 +42,6 @@ class _AccountPage extends State<AccountPage> {
   }
 
   Widget logInForm() {
-    var style = TextStyle(
-      height: 0.25,
-      color: Colors.black,
-    );
     var emailTextField = SharedWidgets.formSingleField(Utils.getText(26), (x) {
       setState(() {
         this.email = x;

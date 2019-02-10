@@ -30,6 +30,7 @@ class SharedWidgets {
     var decoration = InputDecoration(
       labelText: name,
       isDense: true,
+      errorText: "Error!",
       hintText: name
     );
     var style = TextStyle(
