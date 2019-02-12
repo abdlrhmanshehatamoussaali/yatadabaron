@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:yatadabaron_flutter/dal/Models/User.dart';
-import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
+import 'package:yatadabaron_flutter/bll/ViewModels/UserLoginVM.dart';
+import 'package:yatadabaron_flutter/pl/AccountPage/AccountSummary.dart';
+import 'package:yatadabaron_flutter/pl/Shared/LoginForm.dart';
 import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
+import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 import 'package:yatadabaron_flutter/globals.dart' as globals;
 
@@ -13,12 +15,11 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPage extends State<AccountPage> {
-  String email;
-  String password;
+  UserLoginVM loginVM = new UserLoginVM();
 
   Widget logOutForm() {
     var logOutButton = RaisedButton(
-      child: Text(Utils.getText(48)),
+      child: Text(Utils.localize(Localization.LOG_OUT)),
       onPressed: () {
         setState(() {
           globals.isLoggedIn = false;
@@ -27,83 +28,32 @@ class _AccountPage extends State<AccountPage> {
       },
       color: Theme.of(context).primaryColor,
     );
+    var goTopicsPageButton = RaisedButton(
+      child: Text(Utils.localize(Localization.SEARCH_TOPICS_PAGE)),
+      onPressed: () {
+        Utils.goTopics(context);
+      },
+      color: Theme.of(context).primaryColor,
+    );
     return Card(
       child: Container(
         padding: EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          textDirection: Utils.getTextDirection(),
-          children: <Widget>[
-            logOutButton,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget logInForm() {
-    var emailTextField = SharedWidgets.formSingleField(Utils.getText(26), (x) {
-      setState(() {
-        this.email = x;
-      });
-    });
-    var passwordTextField = SharedWidgets.formSingleField(Utils.getText(46), (x) {
-      setState(() {
-        this.password = x;
-      });
-    });;
-    var logInButton = RaisedButton(
-      child: Text(Utils.getText(45)),
-      onPressed: () async {
-        UnitOfWork uow = new UnitOfWork();
-        Utils.showPleaseWait(context);
-        User u = await uow.Users.authenticateUser(this.email, this.password);
-        Navigator.pop(context);
-        if (u == null) {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return Utils.simpleDialog(context, Utils.getText(57));
-              });
-        } else {
-          setState(() {
-            globals.isLoggedIn = true;
-            globals.user = u;
-            this.email = null;
-            this.password = null;
-          });
-        }
-      },
-      color: Theme.of(context).primaryColor,
-    );
-    var signUpButton = RaisedButton(
-      child: Text(Utils.getText(47)),
-      onPressed: () {
-        Utils.goSignup(context);
-      },
-      color: Theme.of(context).primaryColor,
-    );
-    return Card(
-      child: Container(
-        padding: EdgeInsets.all(15),
         child: Column(
           children: <Widget>[
-            emailTextField,
-            passwordTextField,
+            AccountSummary(),
             Row(
               textDirection: Utils.getTextDirection(),
-              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(3),
-                  child: logInButton,
+                Expanded(
+                  flex: 1,
+                  child: Container(child: goTopicsPageButton,padding: EdgeInsets.all(15)),
                 ),
-                Container(
-                  padding: EdgeInsets.all(3),
-                  child: signUpButton,
+                Expanded(
+                  flex: 1,
+                  child: Container(child: logOutButton,padding: EdgeInsets.all(15)),
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),
@@ -116,13 +66,18 @@ class _AccountPage extends State<AccountPage> {
     if (globals.isLoggedIn) {
       form = logOutForm();
     } else {
-      form = logInForm();
+      form = LoginForm(() {
+        this.setState(() {});
+      });
     }
 
     return Scaffold(
       appBar: SharedWidgets.customAppBar(Utils.getText(58)),
-      body: Column(
-        children: <Widget>[form],
+      body: Container(
+        padding: EdgeInsets.all(10),
+        child: ListView(
+          children: <Widget>[form],
+        ),
       ),
     );
   }

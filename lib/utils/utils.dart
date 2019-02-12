@@ -3,31 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:yatadabaron_flutter/bll/Mappers/UserSettingsMapper.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/ChapterVM.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/ContactForm.dart';
+import 'package:yatadabaron_flutter/dal/Models/ResearchTopic.dart';
 import 'package:yatadabaron_flutter/pl/AccountPage/AccountPage.dart';
 import 'package:yatadabaron_flutter/pl/ContactUsPage/ContactUs.dart';
 import 'package:yatadabaron_flutter/pl/HomePage/HomePage.dart';
+import 'package:yatadabaron_flutter/pl/HubPage/TopicCommentsPage.dart';
+import 'package:yatadabaron_flutter/pl/HubPage/TopicsPage.dart';
 import 'package:yatadabaron_flutter/pl/LettersPage/LettersPage.dart';
 import 'package:yatadabaron_flutter/pl/ReadingPage/ReadPage.dart';
 import 'package:yatadabaron_flutter/pl/SearchPage/SearchPage.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/UserSettings.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
 import 'package:yatadabaron_flutter/pl/SignUpPage/SignupPage.dart';
 
 class Utils {
-  static Map<String,String> apiBasicHeaders(){
-    return {
-        "Content-Type": "application/json; charset=UTF-8",
-        "authorization": "Basic " + base64Encode(utf8.encode("abdlrhmanshehata:ilp01bmrIDC!"))
-      };
-  }
   static String getText(int code) {
     List<String> staticTextArabic = [
       "يَتَدَبَّرُونْ", //1
@@ -73,28 +70,27 @@ class Utils {
       "القرآن الكريم", //41
       "تواصل معنا", //42
       "تقييم البرنامج", //43
-      "مجهول", //44
+      "غير مسجل", //44
       "تسجيل الدخول", //45
       "كلمة المرور", //46
-      "إنشاء حساب",//47
-      "تسجيل الخروج",//48
-      "إلغاء",//49
-      "العمر",//50
-      "النوع",//51
-      "البلد",//52
-      "غرض الاستخدام",//53
-      "تم إنشاء حساب جديد بنجاح",//54
-      "قد حدث خطأ ما أثناء إنشاء حساب جديد ! برجاء المحاولة مرة آخري والتأكد من الاتصال الجيد بالانترنت",//55
-      "برجاء الانتظار ...",//56
-      "هذه البيانات غير صحيحة, برجاء التأكد منها واعادة المحاولة",//57
-      "ادارة الحساب",//58
-      "",//59
-      "",//60
-      "",//61
-      "",//62
-      "",//63
-      "",//64
-
+      "إنشاء حساب", //47
+      "تسجيل الخروج", //48
+      "إلغاء", //49
+      "العمر", //50
+      "النوع", //51
+      "البلد", //52
+      "غرض الاستخدام", //53
+      "تم إنشاء حساب جديد بنجاح", //54
+      "قد حدث خطأ ما أثناء إنشاء حساب جديد ! برجاء المحاولة مرة آخري والتأكد من الاتصال الجيد بالانترنت", //55
+      "برجاء الانتظار ...", //56
+      "هذه البيانات غير صحيحة, برجاء التأكد منها واعادة المحاولة", //57
+      "ادارة الحساب", //58
+      "ابحث عن البلد هنا", //59
+      "تساعدنا هذه البيانات كثيراً في تطوير البرنامج ليناسب جميع الاحتياجات, شكراً علي وقتك", //60
+      "", //61
+      "", //62
+      "", //63
+      "", //64
     ];
     int index = code - 1;
     if ((index) >= 0 && (index) < staticTextArabic.length) {
@@ -103,23 +99,35 @@ class Utils {
       return "";
     }
   }
-  static showPleaseWait(BuildContext context){
-    showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return Utils.simpleDialog(context, Utils.getText(56),false);
-          },
-    );
-  }
-  static goLetters(BuildContext context) async{
-    Navigator.push(
-        context, MaterialPageRoute(builder: (b) => LettersPage()));
+
+  static String localize(dynamic x) {
+    return x["ar"];
   }
 
-  static goSearch(BuildContext context, [ChapterVM chapter = null]) async{
-    Navigator.push(
-        context, MaterialPageRoute(builder: (b) => SearchPage()));
+  static int toNumber(String x, int n) {
+    int result = int.tryParse(x);
+    if (result == null) {
+      return n;
+    }
+    return result;
+  }
+
+  static showPleaseWait(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Utils.simpleDialog(context, Utils.getText(56), false);
+      },
+    );
+  }
+
+  static goLetters(BuildContext context) async {
+    Navigator.push(context, MaterialPageRoute(builder: (b) => LettersPage()));
+  }
+
+  static goSearch(BuildContext context, [ChapterVM chapter = null]) async {
+    Navigator.push(context, MaterialPageRoute(builder: (b) => SearchPage()));
   }
 
   static goRead(BuildContext context) async {
@@ -128,6 +136,15 @@ class Utils {
 
   static goAccount(BuildContext context) async {
     Navigator.push(context, MaterialPageRoute(builder: (b) => AccountPage()));
+  }
+
+  static goTopics(BuildContext context) async {
+    Navigator.push(context, MaterialPageRoute(builder: (b) => TopicsPage()));
+  }
+
+  static goTopicComments(BuildContext context, ResearchTopic topic) async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (b) => TopicCommentsPage(topic)));
   }
 
   static goSignup(BuildContext context) async {
@@ -139,11 +156,10 @@ class Utils {
   }
 
   static goHome(BuildContext context) async {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (b) => HomePage()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (b) => HomePage()));
   }
-static String apiBaseURL(){
-  return "http://www.wisebaysolutions.tech/api/yatadabaron/";
-}
+
   static showRatingDialog(BuildContext context) async {
     UserSettings u = await getUserSettings();
     int no = int.tryParse(u.noOfUses) ?? 0;
@@ -163,6 +179,21 @@ static String apiBaseURL(){
           return ratingDialog(context);
         },
       );
+    }
+  }
+
+  static int  calculateNumberOfPages(int totalCount, int pageSize) {
+    if (totalCount != -1) {
+      if (pageSize > totalCount) {
+        return 1;
+      } else {
+        int divisionResult = (totalCount ~/ pageSize);
+        int quotient = (totalCount % pageSize);
+        int count = (quotient > 0) ? divisionResult + 1 : divisionResult;
+        return count;
+      }
+    } else {
+      return  0;
     }
   }
 
@@ -300,26 +331,27 @@ static String apiBaseURL(){
     );
   }
 
-  static Widget simpleDialog(BuildContext context, String text,[bool withButton=true]) {
+  static Widget simpleDialog(BuildContext context, String text,
+      [bool withButton = true]) {
     Widget button;
     if (withButton) {
       button = SimpleDialogOption(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Row(
-            textDirection: Utils.getTextDirection(),
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                getText(30),
-                textDirection: Utils.getTextDirection(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        );
-    }else{
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Row(
+          textDirection: Utils.getTextDirection(),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              getText(30),
+              textDirection: Utils.getTextDirection(),
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      );
+    } else {
       button = Text("");
     }
     return SimpleDialog(
@@ -346,12 +378,20 @@ static String apiBaseURL(){
     chapter.Summary = "6236 آية";
     return chapter;
   }
-  
+
   static TextDirection getTextDirection() {
     if (true) {
       return TextDirection.rtl;
     } else {
       return TextDirection.ltr;
+    }
+  }
+
+  static TextDirection getInverseTextDirection() {
+    if (true) {
+      return TextDirection.ltr;
+    } else {
+      return TextDirection.rtl;
     }
   }
 

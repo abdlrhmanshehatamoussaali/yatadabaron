@@ -1,36 +1,34 @@
 import 'package:yatadabaron_flutter/dal/Models/ISerializable.dart';
-import 'package:yatadabaron_flutter/dal/Models/User.dart';
 import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
 
-class ResearchTopicComment implements ISerializable {
+class CustomResearchTopicComment implements ISerializable {
   int CommentID;
   String Body;
   DateTime Date;
   int UserID;
   int TopicID;
-
-  User MyUser;
+  String UserName;
+  String CountryNameAR;
+  String CountryNameEN;
 
   //Related Entities
   Future fetchUser(UnitOfWork uow) async {
-    var users = await uow.Users.fetch(
-      {"UserID": this.UserID.toString()},
-      true,
-      uow,
-    );
-    this.MyUser = users.first;
+    
   }
 
   //Serialization
   @override
-  ResearchTopicComment fromJSON(dynamic record) {
+  CustomResearchTopicComment fromJSON(dynamic record) {
     try {
-      ResearchTopicComment g = ResearchTopicComment();
+      CustomResearchTopicComment g = CustomResearchTopicComment();
       g.CommentID = int.parse(record["CommentID"].toString());
       g.TopicID = int.parse(record["TopicID"].toString());
       g.UserID = int.parse(record["UserID"].toString());
       g.Body = record["Body"];
       g.Date = DateTime.parse(record["Date"]);
+      g.UserName = record["UserName"];
+      g.CountryNameAR = record["CountryNameAR"];
+      g.CountryNameEN = record["CountryNameEN"];
       return g;
     } catch (e) {
       return null;
@@ -39,13 +37,7 @@ class ResearchTopicComment implements ISerializable {
 
   @override
   Map<String, String> toJSON(bool includeID) {
-    Map<String, String> result = new Map();
-    result["Body"] = this.Body;
-    result["CommentID"] = this.CommentID.toString();
-    result["Date"] = this.Date.toString();
-    result["UserID"] = this.UserID.toString();
-    result["TopicID"] = this.TopicID.toString();
-    return result;
+    return null;
   }
 
   @override

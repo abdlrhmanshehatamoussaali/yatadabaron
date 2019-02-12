@@ -1,6 +1,5 @@
-
-class Chapter{
- int ID;
+class Chapter {
+  int ID;
   String EnName;
   String ArName;
   int Location;

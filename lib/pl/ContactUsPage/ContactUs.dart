@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/ContactForm.dart';
 import 'package:yatadabaron_flutter/dal/Models/User.dart';
+import 'package:yatadabaron_flutter/dal/Models/UserMessage.dart';
 import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 import 'package:yatadabaron_flutter/globals.dart' as globals;
@@ -14,6 +15,7 @@ class ContactUs extends StatefulWidget {
 
 class _ContactUs extends State<ContactUs> {
   ContactForm _myForm = ContactForm();
+  UserMessage _message = UserMessage();
 
   TextStyle _labelsStyle() {
     return TextStyle(fontWeight: FontWeight.bold);
@@ -29,38 +31,6 @@ class _ContactUs extends State<ContactUs> {
   Widget _form() {
     return ListView(
       children: <Widget>[
-        Text(
-          Utils.getText(28),
-          style: _labelsStyle(),
-          textDirection: Utils.getTextDirection(),
-        ),
-        TextField(
-          textDirection: Utils.getTextDirection(),
-          maxLines: 1,
-          decoration: _decoration(),
-          onChanged: (x) {
-            setState(() {
-              this._myForm.Name = x;
-            });
-          },
-        ),
-        Text(" "),
-        Text(
-          Utils.getText(26),
-          style: _labelsStyle(),
-          textDirection: Utils.getTextDirection(),
-        ),
-        TextField(
-          textDirection: Utils.getTextDirection(),
-          decoration: _decoration(),
-          maxLines: 1,
-          onChanged: (x) {
-            setState(() {
-              this._myForm.Email = x;
-            });
-          },
-        ),
-        Text(" "),
         Text(
           Utils.getText(27),
           style: _labelsStyle(),

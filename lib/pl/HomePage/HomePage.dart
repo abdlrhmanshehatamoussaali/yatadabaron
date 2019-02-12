@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:launch_review/launch_review.dart';
+import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 
 class HomePage extends StatelessWidget {
@@ -59,12 +60,16 @@ class HomePage extends StatelessWidget {
 
   Widget _menuItem(BuildContext c, String tag, IconData i, Function f) {
     var item = Container(
-      color: Theme.of(c).primaryColor,
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(const Radius.circular(15)),
+        color: Theme.of(c).primaryColor,
+      ),
       alignment: Alignment.center,
       child: Column(
         children: <Widget>[
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Icon(i),
           ),
           Expanded(
@@ -75,6 +80,7 @@ class HomePage extends StatelessWidget {
                 tag,
                 textDirection: Utils.getTextDirection(),
                 textAlign: TextAlign.center,
+                softWrap: true,
               ),
             ),
           ),
@@ -102,23 +108,27 @@ class HomePage extends StatelessWidget {
     var linkContact = _menuItem(c, Utils.getText(42), Icons.email, () {
       Utils.goContact(c);
     });
-     var linkRate = _menuItem(c, Utils.getText(43), Icons.star, () {
+    var linkRate = _menuItem(c, Utils.getText(43), Icons.star, () {
       LaunchReview.launch();
     });
     var linkAccount = _menuItem(c, Utils.getText(58), Icons.account_box, () {
       Utils.goAccount(c);
     });
+    var linkTopics = _menuItem(c, Utils.localize(Localization.SEARCH_TOPICS_PAGE), Icons.forum, () {
+      Utils.goTopics(c);
+    });
 
     return GridView.count(
-      padding: EdgeInsets.all(20),
-      crossAxisCount: 2,
-      mainAxisSpacing: 30,
-      crossAxisSpacing: 30,
+      padding: EdgeInsets.all(10),
+      crossAxisCount: 3,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 5,
       children: <Widget>[
         linkSearch,
-        linkLetters,
-        linkAccount,
         linkRead,
+        linkAccount,
+        linkTopics,
+        linkLetters,
         linkContact,
         linkRate,
       ],

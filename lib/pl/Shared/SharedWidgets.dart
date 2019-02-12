@@ -26,59 +26,126 @@ class SharedWidgets {
     );
   }
 
-  static Widget formSingleField(String name, Function _onChanged,[TextInputType type=TextInputType.text]) {
-    var decoration = InputDecoration(
-      labelText: name,
-      isDense: true,
-      errorText: "Error!",
-      hintText: name
+  static Widget infiniteList(Function fetchFunction, Function buildFunction,
+      [int count = null]) {
+    Widget widget;
+    widget = ListView.builder(
+      itemCount: count,
+      itemBuilder: (context, index) {
+        return FutureBuilder(
+          future: fetchFunction(index),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 2,
+                  child: Align(
+                      alignment: Alignment.topCenter,
+                      child: CircularProgressIndicator()),
+                );
+              case ConnectionState.done:
+                var pageData = snapshot.data;
+                return buildFunction(pageData);
+              default:
+            }
+          },
+        );
+      },
     );
-    var style = TextStyle(
-      height: 1,
-      color: Colors.black,
+    return widget;
+  }
+
+  static Widget spinner() {
+    return Align(
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  static Widget formSingleField(String name, Function _onChanged,
+      {TextInputType type: TextInputType.text,
+      String error: null,
+      bool withLabel: true,
+      bool withHint: true,
+      bool isPassword: false}) {
+    var decoration = InputDecoration(
+      labelText: withLabel ? name : null,
+      isDense: true,
+      errorText: error,
+      hintText: withHint ? name : null,
     );
     var textField = TextField(
       keyboardType: type,
       textDirection: Utils.getTextDirection(),
-      style: style,
       decoration: decoration,
       onChanged: (x) {
         _onChanged(x);
       },
       maxLines: 1,
       textAlign: TextAlign.center,
+      obscureText: isPassword,
     );
-
     return Directionality(
       child: textField,
       textDirection: Utils.getTextDirection(),
     );
   }
- 
+
+  static Widget staticLabel(String label, String value) {
+    var l = Text(
+      label,
+      textDirection: Utils.getTextDirection(),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 13,
+        color: Colors.grey[800],
+      ),
+      maxLines: 1,
+    );
+    var v = Text(
+      value,
+      textDirection: Utils.getInverseTextDirection(),
+      style: TextStyle(color: Colors.grey[700]),
+      maxLines: 1,
+    );
+    return Row(
+      textDirection: Utils.getTextDirection(),
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: l,
+        ),
+        Expanded(
+          flex: 1,
+          child: v,
+        )
+      ],
+    );
+  }
+
   static Widget userAvatar() {
+    Color color;
+    String text;
     if (globals.isLoggedIn) {
-      return Row(
-        textDirection: Utils.getTextDirection(),
-        children: <Widget>[
-          Icon(Icons.account_circle),
-          Text(
-            globals.user.Name,
-            style: TextStyle(
-              color: Colors.orange[400],
-              fontStyle: FontStyle.italic
-            ),
-          ),
-        ],
-      );
+      text = globals.user.Name;
+      color = Colors.green[700];
     } else {
-      return Row(
-        textDirection: Utils.getTextDirection(),
-        children: <Widget>[
-          Icon(Icons.account_circle),
-          Text(Utils.getText(44)),
-        ],
-      );
+      text = Utils.getText(44);
+      color = Colors.red;
     }
+    return Row(
+      textDirection: Utils.getTextDirection(),
+      children: <Widget>[
+        Icon(Icons.account_circle),
+        Text(
+          text,
+          style: TextStyle(
+            color: color,
+          ),
+        ),
+      ],
+    );
   }
 
   static Widget customAppBar(String title, [bool backArrow = true]) {
