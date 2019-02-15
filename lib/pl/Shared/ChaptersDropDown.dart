@@ -8,12 +8,16 @@ class ChaptersDropdown extends StatefulWidget {
   Function onChange;
   Function executeOnStart;
   bool wholeQuranIncluded;
-  bool isExplanded;
+  bool isExpanded;
+  bool withSummary;
+  TextStyle innerStyle;
 
   ChaptersDropdown(this.initialValue, this.onChange,
       [this.executeOnStart,
       this.wholeQuranIncluded = false,
-      this.isExplanded = false]);
+      this.isExpanded = false,
+      this.withSummary = false,
+      this.innerStyle = null]);
 
   @override
   State<StatefulWidget> createState() => _ChaptersDropDown();
@@ -42,6 +46,10 @@ class _ChaptersDropDown extends State<ChaptersDropdown> {
 
     if (this._chapters != null) {
       List<DropdownMenuItem> items = this._chapters.map<DropdownMenuItem>((c) {
+        var name = c.ArName;
+        if (widget.withSummary) {
+          name = c.ArName + "       " + c.Summary;
+        }
         return DropdownMenuItem(
           value: c.ID,
           child: Container(
@@ -51,7 +59,8 @@ class _ChaptersDropDown extends State<ChaptersDropdown> {
               textDirection: Utils.getTextDirection(),
               children: <Widget>[
                 Text(
-                  c.ArName,
+                  name,
+                  style: widget.innerStyle,
                   textDirection: Utils.getTextDirection(),
                 ),
               ],
@@ -63,7 +72,7 @@ class _ChaptersDropDown extends State<ChaptersDropdown> {
       chaptersDropDown = DropdownButton(
         items: items,
         value: widget.initialValue,
-        isExpanded: widget.isExplanded,
+        isExpanded: widget.isExpanded,
         onChanged: (x) async {
           setState(() {
             widget.initialValue = x;

@@ -66,7 +66,7 @@ class _LettersPage extends State<LettersPage> {
       child: Container(
         padding: EdgeInsets.only(left: 10, right: 10),
         alignment: Alignment.center,
-        height: 35,
+        height: 45,
         child: ListView(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
@@ -117,29 +117,20 @@ class _LettersPage extends State<LettersPage> {
 
   @override
   Widget build(BuildContext context) {
-    var _appBar = SharedWidgets.customAppBar(Utils.getText(17));
     var onStart = () {
       _getFrequencies();
     };
     var _chaptersDropdown = ChaptersDropdown(
-        _settings.ChapterIndex, dropDownOnChange, onStart, true,true);
-    return Scaffold(
-      appBar: _appBar,
-      body: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            Card(
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: _chaptersDropdown,
-              ),
-            ),
-            _settingsPanel(),
-            _presentationWidget(),
-          ],
-        ),
+        _settings.ChapterIndex, dropDownOnChange, onStart, true, true);
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(10),
+      child: Column(
+        children: <Widget>[
+          _chaptersDropdown,
+          _settingsPanel(),
+          _presentationWidget(),
+        ],
       ),
     );
   }

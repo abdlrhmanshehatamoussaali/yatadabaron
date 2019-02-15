@@ -6,47 +6,51 @@ import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
 
 class TopicCommentsList extends StatelessWidget {
   final ResearchTopic topic;
+  final ifEmptyWidget;
   final int pageSize;
   final int subCount;
 
-  const TopicCommentsList(this.topic, this.pageSize, this.subCount);
+  const TopicCommentsList(this.topic, this.pageSize, this.subCount,
+      [this.ifEmptyWidget]);
 
   _commentsFetcher(int pageNumber) async {
-    await Future.delayed(Duration(seconds: 1));
     UnitOfWork uow = UnitOfWork();
-    var results = await uow.ResearchTopicComments.getCustom(
-      {
-        "limit": pageSize.toString(),
-        "offset": (pageNumber*pageSize).toString(),
-        "TopicID": topic.TopicID.toString(),
-      }
-    );
+    var results = await uow.ResearchTopicComments.getCustom({
+      "limit": pageSize.toString(),
+      "offset": (pageNumber * pageSize).toString(),
+      "TopicID": topic.TopicID.toString(),
+    });
     return results;
   }
 
   _commentsBuilder(List page) {
-    var items = page.map((topicComment) {
-      return TopicCommentListItem(topicComment);
-    }).toList();
+    if (page != null) {
+      var items = page.map((topicComment) {
+        return TopicCommentListItem(topicComment, Colors.orange[100]);
+      }).toList();
 
-    return ListView.builder(
-      shrinkWrap: true,
-      primary: false,
-      itemBuilder: (context,index){
-        var item = items[index];
-        var itemVisual = Container(
-          padding: EdgeInsets.all(5),
-          child: item,
-        );
-        return Column(
-          children: <Widget>[
-            itemVisual,
-            Divider(color: Colors.grey,)
-          ],
-        );
-      },
-      itemCount: items.length,
-    );
+      return Container(
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemBuilder: (context, index) {
+            var item = items[index];
+            var itemVisual = Container(
+              padding: EdgeInsets.all(5),
+              child: item,
+            );
+            return Column(
+              children: <Widget>[
+                itemVisual,
+              ],
+            );
+          },
+          itemCount: items.length,
+        ),
+      );
+    }else{
+      return Text("");
+    }
   }
 
   @override
@@ -54,14 +58,10 @@ class TopicCommentsList extends StatelessWidget {
     var body;
     if (topic != null) {
       body = SharedWidgets.infiniteList(
-          _commentsFetcher, _commentsBuilder, subCount);
+          _commentsFetcher, _commentsBuilder, subCount, ifEmptyWidget);
     } else {
-      body = Align(
-        alignment: Alignment.center,
-        child: Icon(Icons.rotate_left),
-      );
+      body = SharedWidgets.errorSign();
     }
-
     return body;
   }
 }

@@ -4,9 +4,12 @@ import 'package:yatadabaron_flutter/bll/Mappers/UserSettingsMapper.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/ChapterVM.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/ContactForm.dart';
 import 'package:yatadabaron_flutter/dal/Models/ResearchTopic.dart';
+import 'package:yatadabaron_flutter/dal/Models/User.dart';
+import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
 import 'package:yatadabaron_flutter/pl/AccountPage/AccountPage.dart';
 import 'package:yatadabaron_flutter/pl/ContactUsPage/ContactUs.dart';
 import 'package:yatadabaron_flutter/pl/HomePage/HomePage.dart';
+import 'package:yatadabaron_flutter/pl/HubPage/PostComment.dart';
 import 'package:yatadabaron_flutter/pl/HubPage/TopicCommentsPage.dart';
 import 'package:yatadabaron_flutter/pl/HubPage/TopicsPage.dart';
 import 'package:yatadabaron_flutter/pl/LettersPage/LettersPage.dart';
@@ -23,6 +26,7 @@ import 'dart:convert';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
 import 'package:yatadabaron_flutter/pl/SignUpPage/SignupPage.dart';
+import 'package:yatadabaron_flutter/globals.dart' as globals;
 
 class Utils {
   static String getText(int code) {
@@ -104,6 +108,18 @@ class Utils {
     return x["ar"];
   }
 
+  static Future setRememberMeSettings(
+      int remember, String email, String password) async {
+    //Change remember me
+    UserSettings u = await Utils.getUserSettings();
+    u.userEmail = email;
+    u.userPassword = password;
+    u.rememberMe = remember.toString();
+    await Utils.setUserSettings(u);
+    var returned = await Utils.getUserSettings();
+    return UserSettingsMapper.stringify(returned);
+  }
+
   static int toNumber(String x, int n) {
     int result = int.tryParse(x);
     if (result == null) {
@@ -126,6 +142,11 @@ class Utils {
     Navigator.push(context, MaterialPageRoute(builder: (b) => LettersPage()));
   }
 
+  static goPostComment(BuildContext context, int id, Function onAdd) async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (b) => PostComment(id, onAdd)));
+  }
+
   static goSearch(BuildContext context, [ChapterVM chapter = null]) async {
     Navigator.push(context, MaterialPageRoute(builder: (b) => SearchPage()));
   }
@@ -135,16 +156,8 @@ class Utils {
   }
 
   static goAccount(BuildContext context) async {
-    Navigator.push(context, MaterialPageRoute(builder: (b) => AccountPage()));
-  }
-
-  static goTopics(BuildContext context) async {
-    Navigator.push(context, MaterialPageRoute(builder: (b) => TopicsPage()));
-  }
-
-  static goTopicComments(BuildContext context, ResearchTopic topic) async {
     Navigator.push(
-        context, MaterialPageRoute(builder: (b) => TopicCommentsPage(topic)));
+        context, MaterialPageRoute(builder: (b) => AccountPage(null)));
   }
 
   static goSignup(BuildContext context) async {
@@ -182,8 +195,8 @@ class Utils {
     }
   }
 
-  static int  calculateNumberOfPages(int totalCount, int pageSize) {
-    if (totalCount != -1) {
+  static int calculateNumberOfPages(int totalCount, int pageSize) {
+    if (totalCount > 0) {
       if (pageSize > totalCount) {
         return 1;
       } else {
@@ -192,9 +205,8 @@ class Utils {
         int count = (quotient > 0) ? divisionResult + 1 : divisionResult;
         return count;
       }
-    } else {
-      return  0;
     }
+    return 0;
   }
 
   static Future<void> sendUserMessage(
@@ -402,8 +414,7 @@ class Utils {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String versionCode = packageInfo.buildNumber;
     String versionNumber = packageInfo.version;
-    _print("VERSION CODE: $versionCode");
-    _print("VERSION NUMBER: $versionNumber");
+    _print("VERSION: $versionCode, $versionNumber");
     return versionCode;
   }
 
@@ -475,6 +486,32 @@ class Utils {
           databseByteData.offsetInBytes, databseByteData.lengthInBytes);
       await databaseFile.writeAsBytes(databseBytes);
     }
+    //Check if user is logged in
+    UserSettings settings = await Utils.getUserSettings();
+    String rememberMe = settings.rememberMe;
+    String email = settings.userEmail;
+    String pass = settings.userPassword;
+    if ((rememberMe == "1") && (email != null) && (pass != null)) {
+      try {
+        UnitOfWork uow = new UnitOfWork();
+        User u = await uow.Users.authenticate(
+          email,
+          pass,
+        );
+        if (u != null) {
+          globals.user = u;
+          globals.isLoggedIn = true;
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    //Load version
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String versionCode = packageInfo.buildNumber;
+    String versionNumber = packageInfo.version;
+    globals.version = "$versionCode.$versionNumber";
 
     bool databaseFileExists = await databaseFile.exists();
     return databaseFileExists;

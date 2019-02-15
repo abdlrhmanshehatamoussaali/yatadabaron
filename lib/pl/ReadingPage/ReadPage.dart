@@ -31,36 +31,22 @@ class _ReadPage extends State<ReadPage> {
 
   @override
   Widget build(BuildContext context) {
-    var _appBar = SharedWidgets.customAppBar(Utils.getText(41));
+    var innerStyle = TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold
+    );
     var _searchResults = SharedWidgets.searchResults(this._verses);
     var _dropDown = ChaptersDropdown(this._chapterIndex, update, () {
       update(1);
-    }, false, false);
-    Widget _chapterSummary = Text("...");
-    if (this._chapter != null) {
-      _chapterSummary = Column(
-        textDirection: Utils.getTextDirection(),
-        children: [
-          Text(
-            this._chapter.ArName,
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
-          ),
-          Text(this._chapter.Summary),
-        ],
-      );
-    }
+    }, false, false,true,innerStyle);
 
-    return Scaffold(
-      appBar: _appBar,
-      body: Container(
-        alignment: Alignment.center,
-        child: Column(
-          children: <Widget>[
-            _dropDown,
-            _chapterSummary,
-            _searchResults,
-          ],
-        ),
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: <Widget>[
+          _dropDown,
+          _searchResults,
+        ],
       ),
     );
   }

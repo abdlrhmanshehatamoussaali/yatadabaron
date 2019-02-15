@@ -41,8 +41,9 @@ class ResearchTopicComment implements ISerializable {
   Map<String, String> toJSON(bool includeID) {
     Map<String, String> result = new Map();
     result["Body"] = this.Body;
-    result["CommentID"] = this.CommentID.toString();
-    result["Date"] = this.Date.toString();
+    if(includeID){
+      result["CommentID"] = this.CommentID.toString();
+    }
     result["UserID"] = this.UserID.toString();
     result["TopicID"] = this.TopicID.toString();
     return result;

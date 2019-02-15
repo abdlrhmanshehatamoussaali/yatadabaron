@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/UserLoginVM.dart';
+import 'package:yatadabaron_flutter/bll/ViewModels/UserSettings.dart';
 import 'package:yatadabaron_flutter/pl/AccountPage/AccountSummary.dart';
 import 'package:yatadabaron_flutter/pl/Shared/LoginForm.dart';
-import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
 import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 import 'package:yatadabaron_flutter/globals.dart' as globals;
 
 class AccountPage extends StatefulWidget {
+  final Function onLogIn;
+
+  const AccountPage(this.onLogIn);
+
+  
   @override
   State<StatefulWidget> createState() {
     return _AccountPage();
@@ -16,22 +21,17 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPage extends State<AccountPage> {
   UserLoginVM loginVM = new UserLoginVM();
-
+  bool rememberMe = false;
   Widget logOutForm() {
     var logOutButton = RaisedButton(
       child: Text(Utils.localize(Localization.LOG_OUT)),
-      onPressed: () {
+      onPressed: () async{
         setState(() {
           globals.isLoggedIn = false;
           globals.user = null;
         });
-      },
-      color: Theme.of(context).primaryColor,
-    );
-    var goTopicsPageButton = RaisedButton(
-      child: Text(Utils.localize(Localization.SEARCH_TOPICS_PAGE)),
-      onPressed: () {
-        Utils.goTopics(context);
+        //Update the user settings
+        await Utils.setRememberMeSettings(0, "", "");
       },
       color: Theme.of(context).primaryColor,
     );
@@ -46,11 +46,8 @@ class _AccountPage extends State<AccountPage> {
               children: <Widget>[
                 Expanded(
                   flex: 1,
-                  child: Container(child: goTopicsPageButton,padding: EdgeInsets.all(15)),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(child: logOutButton,padding: EdgeInsets.all(15)),
+                  child: Container(
+                      child: logOutButton, padding: EdgeInsets.all(15)),
                 ),
               ],
             )
@@ -66,19 +63,9 @@ class _AccountPage extends State<AccountPage> {
     if (globals.isLoggedIn) {
       form = logOutForm();
     } else {
-      form = LoginForm(() {
-        this.setState(() {});
-      });
+      form = LoginForm(widget.onLogIn());
     }
 
-    return Scaffold(
-      appBar: SharedWidgets.customAppBar(Utils.getText(58)),
-      body: Container(
-        padding: EdgeInsets.all(10),
-        child: ListView(
-          children: <Widget>[form],
-        ),
-      ),
-    );
+    return form;
   }
 }

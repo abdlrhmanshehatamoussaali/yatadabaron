@@ -26,6 +26,6 @@ class UsersRepository extends GenericRepository<User>{
 
   Future<bool> add(User user) async {
     var done = await Client.post("Users", user.toJSON(false));
-    return (done != null) && (done == "1");
+    return (done != null) && (done.toString() == "1");
   }
 }

@@ -5,7 +5,10 @@ import './pl/HomePage/HomePage.dart';
 void main() async {
   bool succeded = await Utils.Initialize();
   if (succeded) {
-    runApp(MyApp());
+    runApp(Directionality(
+      textDirection: Utils.getTextDirection(),
+      child: MyApp(),
+    ));
   } else {
     runApp(ErrorPage());
   }
@@ -23,8 +26,6 @@ class ErrorPage extends StatelessWidget {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -1,12 +1,9 @@
 import 'package:yatadabaron_flutter/bll/ViewModels/UserSettings.dart';
 
-class UserSettingsMapper{
-
-  
+class UserSettingsMapper {
   static const String SEPARATOR1 = ";";
   static const String SEPARATOR2 = ":";
-  
-  
+
   static String stringify(UserSettings x) {
     List<String> array = [
       "noOfUses$SEPARATOR2${x.noOfUses}",
@@ -14,6 +11,9 @@ class UserSettingsMapper{
       "userHasSentQuestionnaire$SEPARATOR2${x.userHasSentQuestionnaire}",
       "userHasRated$SEPARATOR2${x.userHasRated}",
       "userID$SEPARATOR2${x.userID}",
+      "userEmail$SEPARATOR2${x.userEmail}",
+      "userPassword$SEPARATOR2${x.userPassword}",
+      "rememberMe$SEPARATOR2${x.rememberMe}",
     ];
 
     return array.join(SEPARATOR1);
@@ -41,9 +41,17 @@ class UserSettingsMapper{
         if (key == "userID") {
           u.userID = (value);
         }
+        if (key == "userEmail") {
+          u.userEmail = (value);
+        }
+        if (key == "userPassword") {
+          u.userPassword = (value);
+        }
+        if (key == "rememberMe") {
+          u.rememberMe = (value);
+        }
       }
     } catch (e) {}
     return u;
   }
-
 }

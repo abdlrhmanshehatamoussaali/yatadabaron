@@ -30,8 +30,8 @@ class ValidationRules {
     if (isNull) {
       return ValidationRules.validationMessages("EMPTY_FIELD");
     }
-
-    bool isNotEmail = !isEmail(email);
+    String _email = email.replaceAll(" ", "");
+    bool isNotEmail = !isEmail(_email);
     if (isNotEmail) {
       return ValidationRules.validationMessages("INVALID_EMAIL");
     }

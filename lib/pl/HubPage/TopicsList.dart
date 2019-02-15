@@ -12,7 +12,6 @@ class TopicsList extends StatelessWidget {
   TopicsList(this.pageSize, this.onClick, this.noOfPages);
 
   _pageFetcher(int pageNumber) async {
-    await Future.delayed(Duration(seconds: 1));
     UnitOfWork uow = UnitOfWork();
     var results = await uow.ResearchTopics.fetch({
       "limit": pageSize.toString(),

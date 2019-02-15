@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/VerseGenericVM.dart';
 import 'package:yatadabaron_flutter/globals.dart' as globals;
@@ -26,8 +27,16 @@ class SharedWidgets {
     );
   }
 
-  static Widget infiniteList(Function fetchFunction, Function buildFunction,
-      [int count = null]) {
+  static Widget infiniteList(
+      Function fetchFunction, Function buildFunction, int count,
+      [Widget empty]) {
+    if (count == null || count <= 0) {
+      if (empty != null) {
+        return empty;
+      } else {
+        return SharedWidgets.errorSign();
+      }
+    }
     Widget widget;
     widget = ListView.builder(
       itemCount: count,
@@ -60,6 +69,13 @@ class SharedWidgets {
     return Align(
       alignment: Alignment.center,
       child: CircularProgressIndicator(),
+    );
+  }
+
+  static Widget errorSign() {
+    return Align(
+      alignment: Alignment.center,
+      child: Icon(Icons.error),
     );
   }
 
@@ -129,13 +145,14 @@ class SharedWidgets {
     String text;
     if (globals.isLoggedIn) {
       text = globals.user.Name;
-      color = Colors.green[700];
+      color = Colors.blue[600];
     } else {
       text = Utils.getText(44);
       color = Colors.red;
     }
     return Row(
       textDirection: Utils.getTextDirection(),
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Icon(Icons.account_circle),
         Text(
@@ -179,6 +196,54 @@ class SharedWidgets {
     }
     return AppBar(
       flexibleSpace: body,
+    );
+  }
+
+  static Widget titleBox() {
+    var _title = Container(
+      alignment: Alignment.center,
+      child: new Text(
+        Utils.getText(1),
+        style: new TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Color.fromRGBO(70, 70, 70, 1),
+          fontSize: 35.0,
+        ),
+        textDirection: Utils.getTextDirection(),
+        textAlign: TextAlign.center,
+      ),
+    );
+    var _subTitle = Container(
+      alignment: Alignment.center,
+      child: new Text(
+        Utils.localize(Localization.APP_DESC),
+        style: new TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Color.fromARGB(255, 90, 90, 90),
+          fontSize: 9.0,
+        ),
+        textAlign: TextAlign.center,
+        textDirection: Utils.getTextDirection(),
+      ),
+    );
+    return new Container(
+      alignment: Alignment.center,
+      padding: new EdgeInsets.all(10),
+      decoration: new BoxDecoration(
+        image: new DecorationImage(
+          image: new AssetImage('assets/imgs/home.jpg'),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: Column(
+        textDirection: Utils.getTextDirection(),
+        children: <Widget>[
+          _title,
+          Text(globals.version??""),
+          _subTitle,
+          userAvatar()
+        ],
+      ),
     );
   }
 

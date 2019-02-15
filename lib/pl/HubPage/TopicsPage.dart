@@ -6,6 +6,11 @@ import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 
 class TopicsPage extends StatefulWidget {
+  final Function onSelectionChanged;
+
+  TopicsPage(this.onSelectionChanged);
+
+
   @override
   State<StatefulWidget> createState() => _TopicsPage();
 }
@@ -32,9 +37,7 @@ class _TopicsPage extends State<TopicsPage> {
   @override
   Widget build(BuildContext context) {
     var onclickTopic = (t) {
-      setState(() {
-        Utils.goTopicComments(context, t);
-      });
+      widget.onSelectionChanged(t);
     };
     var topicsSection = TopicsList(pageSize, onclickTopic, noOfPages);
     var body = Card(
@@ -44,16 +47,6 @@ class _TopicsPage extends State<TopicsPage> {
       ),
     );
 
-    return new Scaffold(
-      appBar: SharedWidgets.customAppBar(
-          Utils.localize(Localization.SEARCH_TOPICS_PAGE)),
-      body: body,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.refresh),
-        onPressed: () {
-          refreshTopics();
-        },
-      ),
-    );
+    return body;
   }
 }

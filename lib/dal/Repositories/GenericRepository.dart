@@ -20,4 +20,9 @@ class GenericRepository<T extends ISerializable> {
   Future<int> count([Map<String,String> map = null]) {
     return Client.countEntity<T>(map);
   }
+
+   Future<bool> add(T entity) async {
+    var done = await Client.post(Client.endpointsMap()[T],entity.toJSON(false));
+    return (done != null) && (done.toString() == "1");
+  }
 }

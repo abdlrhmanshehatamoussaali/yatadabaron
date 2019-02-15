@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yatadabaron_flutter/bll/ViewModels/ContactForm.dart';
-import 'package:yatadabaron_flutter/dal/Models/User.dart';
 import 'package:yatadabaron_flutter/dal/Models/UserMessage.dart';
 import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
-import 'package:yatadabaron_flutter/globals.dart' as globals;
 
 class ContactUs extends StatefulWidget {
   @override

@@ -5,7 +5,7 @@ import 'package:yatadabaron_flutter/dal/Models/ResearchPurpose.dart';
 import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
 import 'package:yatadabaron_flutter/utils/ValidationRules.dart';
 
-class User implements ISerializable{
+class User implements ISerializable {
   int UserID;
   int Age;
   int GenderID;
@@ -80,8 +80,12 @@ class User implements ISerializable{
   //validation
   String passwordValidation() => ValidationRules.validatePassword(Password);
   String emailvalidation() {
-   return ValidationRules.validateEmail(Email);
+    if(Email!=null){
+      Email = Email.replaceAll(" ", "");
+    }
+    return ValidationRules.validateEmail(Email);
   }
+
   String countryValidation() => ValidationRules.validateNonZero(CountryID);
   String purposeValidation() => ValidationRules.validateNonZero(PurposeID);
   String genderValidation() => ValidationRules.validateNonZero(GenderID);
@@ -109,6 +113,7 @@ class User implements ISerializable{
     }
     return null;
   }
+
   bool isvalid() {
     return (emailvalidation() == null) &&
         (passwordValidation() == null) &&

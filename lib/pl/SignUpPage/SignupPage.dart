@@ -6,8 +6,8 @@ import 'package:yatadabaron_flutter/dal/Models/User.dart';
 import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
 import 'package:yatadabaron_flutter/pl/Shared/CustomDropDown.dart';
 import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
+import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
-import 'package:yatadabaron_flutter/globals.dart' as globals;
 
 class SignupPage extends StatefulWidget {
   @override
@@ -173,26 +173,38 @@ class _SignupPage extends State<SignupPage> {
 
     var signUpButtonOnPressed = () async {
       UnitOfWork uow = UnitOfWork();
+      
+      //Check Repeated
       Utils.showPleaseWait(context);
-      bool done = await uow.Users.add(this._user);
+      int count = await uow.Users.count({"Email": this._user.Email});
       Navigator.pop(context);
-      if (done) {
+      if (count > 0) {
         await showDialog(
           context: context,
           barrierDismissible: true,
           builder: (context) {
-            return Utils.simpleDialog(context, Utils.getText(54));
+            return Utils.simpleDialog(
+                context, Utils.localize(Localization.EMAIL_REPEATED));
           },
         );
-        Utils.goHome(context);
       } else {
+        Utils.showPleaseWait(context);
+        bool done = await uow.Users.add(this._user);
+        Navigator.pop(context);
+        String msg = Utils.localize(Localization.ACCOUNT_CREATE_FAILED);
+        if (done) {
+          msg = Utils.localize(Localization.ACCOUNT_CREATED);
+        }
         await showDialog(
           context: context,
           barrierDismissible: true,
           builder: (context) {
-            return Utils.simpleDialog(context, Utils.getText(55));
+            return Utils.simpleDialog(context, msg);
           },
         );
+        if (done) {
+          Utils.goHome(context);
+        }
       }
     };
     var signUpButton = RaisedButton(

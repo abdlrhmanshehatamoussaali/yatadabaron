@@ -6,6 +6,7 @@ import 'package:yatadabaron_flutter/dal/Models/Verse.dart';
 import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
 import 'package:yatadabaron_flutter/pl/SearchPage/SearchSettingsWidget.dart';
 import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
+import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 import 'package:flutter/services.dart';
 
@@ -52,9 +53,9 @@ class _SerachPage extends State<SearchPage> {
     await _search();
   }
 
-  Widget _searchSummary() {
+  String _searchSummaryText() {
     String summary = "";
-    Color color = Colors.red[300];
+    //Color color = Colors.red[300];
     if (_settings.Keyword.isEmpty) {
       summary = Utils.getText(23);
     } else {
@@ -62,66 +63,50 @@ class _SerachPage extends State<SearchPage> {
         var s12 = Utils.getText(12);
         s12 = s12.replaceAll("%", _results.length.toString());
         summary = s12 + "[ " + _settings.Keyword + " ]";
-        color = Theme.of(context).accentColor;
+        //color = Theme.of(context).accentColor;
       } else {
         summary = Utils.getText(22);
       }
     }
-
-    return Container(
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: Text(
-        summary,
-        textDirection: Utils.getTextDirection(),
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: color,
-          fontSize: 11,
-          fontStyle: FontStyle.italic,
-        ),
-      ),
-    );
+    return summary;
   }
 
   Widget _searchForm() {
-    var buttonSerach = Container(
-      padding: EdgeInsets.all(1),
-      child: RaisedButton(
-        child: Text(
-          Utils.getText(11),
-          textDirection: Utils.getTextDirection(),
+    var textfield = Directionality(
+      textDirection: Utils.getTextDirection(),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: Utils.localize(Localization.SEARCH_KEYWORD_HERE),
+          //labelText: Utils.localize(Localization.SEARCH_KEYWORD_HERE),
+          fillColor: Colors.grey,
+          isDense: true,
+          errorText: _searchSummaryText(),
         ),
-        color: Theme.of(context).primaryColor,
-        onPressed: () async {
+        onChanged: (x) {
+          this._settings.Keyword = x;
+        },
+        onSubmitted: (x) async {
           await this._search();
         },
+        textDirection: Utils.getTextDirection(),
+        textAlign: TextAlign.center,
       ),
-    );
-
-    var textfield = TextField(
-      decoration: InputDecoration(
-        hintText: Utils.getText(4),
-      ),
-      onChanged: (x) {
-        this._settings.Keyword = x;
-      },
-      onSubmitted: (x) async {
-        await this._search();
-      },
-      textDirection: Utils.getTextDirection(),
-      textAlign: TextAlign.center,
     );
     return Container(
       padding: EdgeInsets.all(5),
       child: Row(
-        textDirection: Utils.getTextDirection(),
         children: <Widget>[
           Expanded(
             child: textfield,
             flex: 1,
           ),
-          buttonSerach,
+          IconButton(
+            icon: Icon(Icons.send),
+            color: Colors.green,
+            onPressed: () async{
+              await this._search();
+            },
+          )
         ],
       ),
     );
@@ -135,20 +120,16 @@ class _SerachPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    var _appBar = SharedWidgets.customAppBar(Utils.getText(40));
     var _searchResults = SharedWidgets.searchResults(_results, true);
-    return Scaffold(
-      appBar: _appBar,
-      body: Container(
-        alignment: Alignment.center,
-        child: Column(
-          children: <Widget>[
-            _searchForm(),
-            SearchSettingsWidget(_settings, this._updateSettings),
-            _searchSummary(),
-            _searchResults
-          ],
-        ),
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: <Widget>[
+          _searchForm(),
+          SearchSettingsWidget(_settings, this._updateSettings),
+          //_searchSummary(),
+          _searchResults
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:yatadabaron_flutter/bll/ViewModels/UserLoginVM.dart';
 import 'package:yatadabaron_flutter/dal/Models/User.dart';
 import 'package:yatadabaron_flutter/dal/Repositories/UnitOfWork.dart';
 import 'package:yatadabaron_flutter/pl/Shared/SharedWidgets.dart';
+import 'package:yatadabaron_flutter/utils/Localization.dart';
 import 'package:yatadabaron_flutter/utils/utils.dart';
 import 'package:yatadabaron_flutter/globals.dart' as globals;
 
@@ -15,6 +16,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginForm extends State<LoginForm> {
   UserLoginVM loginVM = new UserLoginVM();
+  bool rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +57,17 @@ class _LoginForm extends State<LoginForm> {
               return Utils.simpleDialog(context, Utils.getText(57));
             });
       } else {
+        //Update the user settings
+        if (rememberMe) {
+          var result = await Utils.setRememberMeSettings(
+              rememberMe ? 1 : 0, u.Email, u.Password);
+        }
         setState(() {
           globals.isLoggedIn = true;
           globals.user = u;
           this.loginVM = new UserLoginVM();
-          widget.refresh();
         });
+        widget.refresh();
       }
     };
 
@@ -76,29 +83,52 @@ class _LoginForm extends State<LoginForm> {
       },
       color: Theme.of(context).primaryColor,
     );
-    return Card(
-      child: Container(
-        padding: EdgeInsets.all(15),
-        child: Column(
-          children: <Widget>[
-            emailTextField,
-            passwordTextField,
-            Row(
-              textDirection: Utils.getTextDirection(),
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(3),
-                  child: logInButton,
-                ),
-                Container(
-                  padding: EdgeInsets.all(3),
-                  child: signUpButton,
-                ),
-              ],
-            ),
-          ],
+    var buttonRow = Row(
+      textDirection: Utils.getTextDirection(),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.all(3),
+          child: logInButton,
         ),
+        Container(
+          padding: EdgeInsets.all(3),
+          child: signUpButton,
+        ),
+      ],
+    );
+    var checkbox = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Checkbox(
+          tristate: false,
+          onChanged: (x) async {
+            setState(() {
+              this.rememberMe = x;
+            });
+          },
+          value: rememberMe,
+        ),
+        Text(Utils.localize(Localization.REMEMBER_ME))
+      ],
+    );
+    var form = ListView(
+      children: <Widget>[
+        emailTextField,
+        passwordTextField,
+        buttonRow,
+        checkbox
+      ],
+    );
+    return Container(
+      padding: EdgeInsets.all(15),
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: form,
+          ),
+        ],
       ),
     );
   }
